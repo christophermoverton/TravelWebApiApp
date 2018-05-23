@@ -115,7 +115,7 @@ namespace TravelAppCore
             // The subject line of the email
             const String SUBJECT =
                 "Travel App confirmation request";
-            String test = "'http://127.0.0.1:58355/api/Userapikey/Register/" + generateKey + "'";
+            String test = "'http://travelappcore-dev.us-west-2.elasticbeanstalk.com/api/Userapikey/Register/" + generateKey + "'";
             // The body of the email
             String BODY =
                 "<h1>Passages </h1>" +

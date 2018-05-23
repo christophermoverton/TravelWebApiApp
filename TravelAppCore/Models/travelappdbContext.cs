@@ -16,7 +16,8 @@ namespace TravelAppCore.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("Server=travelappdbinstance.cnsie3kyxsst.us-west-2.rds.amazonaws.com;database=travelappdb;uid=admin;pwd=y5kMcPtM;");
+                optionsBuilder.UseMySql("Server=35.226.153.115;database=travelappdb;uid=root;pwd=vwkCtEmpk#1;");
+                //optionsBuilder.UseMySql("Server=travelappdbinstance.cnsie3kyxsst.us-west-2.rds.amazonaws.com;database=travelappdb;uid=admin;pwd=y5kMcPtM;");
             }
         }
 
@@ -65,15 +66,19 @@ namespace TravelAppCore.Models
                     .HasColumnName("lon")
                     .HasColumnType("decimal(12,9)");
 
-                entity.Property(e => e.TripId)
+                entity.Property(e => e.TripID)
                     .HasColumnName("tripID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.UserId)
-                    .HasColumnName("userID")
-                    .HasMaxLength(13);
+                entity.Property(e => e.TripName)
+                    .HasColumnName("tripName")
+                    .HasMaxLength(100);
 
-                entity.Property(e => e.WaypointId)
+                entity.Property(e => e.UserID)
+                    .HasColumnName("userID")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.WaypointID)
                     .HasColumnName("waypointID")
                     .HasColumnType("int(11)");
             });

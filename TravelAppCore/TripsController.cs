@@ -29,14 +29,57 @@ namespace TravelAppCore
         [HttpGet("UserTrips")]
         public IEnumerable<Trips> GetTrips(string userId, int tripID)
         {
-            var products = _webAPIDataContext.Trips.Where(p => p.UserId == userId && p.TripId == tripID);
+            var products = _webAPIDataContext.Trips.Where(p => p.UserID == userId && p.TripID == tripID);
             return products;
         }
+
+        [HttpGet("UserTrip")]
+        public IEnumerable<Trips> GetUserTrip(string UserApiKeyId, string UserId, int TripId)
+        {
+            IQueryable<Userapikey> query = _webAPIDataContext.Userapikey.Where(p => p.ApiKeyId == UserApiKeyId);
+            Userapikey ukey = query.FirstOrDefault();
+            Console.WriteLine("Apikey match: ");
+            Console.WriteLine(ukey);
+            if (ukey != null && ukey.Verified)
+            {
+                Console.WriteLine(UserId);
+                var tquery = _webAPIDataContext.Trips.Where(p => p.UserID == UserId && p.TripID == TripId);
+                return tquery;
+            }
+            return new Trips[] { };
+        }
+
+        [HttpGet("TripsList")]
+        public IEnumerable<Trips> GetTripsList(string UserApiKeyId, string UserId)
+        {
+            IQueryable<Userapikey> query = _webAPIDataContext.Userapikey.Where(p => p.ApiKeyId == UserApiKeyId);
+            Userapikey ukey = query.FirstOrDefault();
+            Console.WriteLine("Apikey match: ");
+            Console.WriteLine(ukey);
+            if (ukey != null && ukey.Verified)
+            {
+                Console.WriteLine(UserId);
+                var tquery = _webAPIDataContext.Trips.Where(p => p.UserID == UserId).GroupBy(p => p.TripID);
+                List<Trips> rettrips = new List<Trips>();
+                
+                foreach(var item in tquery)
+                {
+                    rettrips.Add(item.FirstOrDefault());
+                }
+                return rettrips;
+            }
+            else
+            {
+                Console.WriteLine("User api key not verified or doesn't exist!");
+                
+            }
+            return new Trips[] { };
+        } 
 
         [HttpGet("User")]
         public IEnumerable<Trips> GetUserTrips(string userId)
         {
-            var products = _webAPIDataContext.Trips.Where(p => p.UserId == userId);
+            var products = _webAPIDataContext.Trips.Where(p => p.UserID == userId);
             return products;
         }
 
@@ -49,36 +92,56 @@ namespace TravelAppCore
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]Tripsparams value)
+        public SFResponse Post([FromBody]Tripsparams value)
         {
             Trips trip = value.trip;
             IQueryable<Userapikey> queryreq =_webAPIDataContext.Userapikey.Where(p => p.ApiKeyId == value.userApiKeyId);
             Userapikey ukey = queryreq.FirstOrDefault();
             Console.WriteLine("Apikey match: ");
             Console.WriteLine(ukey);
+            SFResponse sres = new SFResponse();
+            sres.Success = false;
             if (ukey != null && ukey.Verified)
             {
                 //value.CreatedOn = DateTime.Now;
                 _webAPIDataContext.Trips.Add(trip);
                 _webAPIDataContext.SaveChanges();
+                sres.Success = true;
             }
             else
             {
                 Console.WriteLine("User api key not verified or doesn't exist!");
             }
+            return sres;
         }
 
         // POST api/<controller>
         [HttpPost("Tripspost")]
-        public void PostTrips([FromBody]List<Trips> value)
+        public SFResponse PostTrips([FromBody]TripsListParams value)
         {
-            //value.CreatedOn = DateTime.Now;
-            foreach (var trip in value)
+            //Trips trip = value.UserApiKeyId;
+            IQueryable<Userapikey> queryreq = _webAPIDataContext.Userapikey.Where(p => p.ApiKeyId == value.UserApiKeyId && p.UserId == value.UserId);
+            Userapikey ukey = queryreq.FirstOrDefault();
+            Console.WriteLine("Apikey match: ");
+            Console.WriteLine(ukey);
+            SFResponse sres = new SFResponse();
+            sres.Success = false;
+            if (ukey != null && ukey.Verified)
             {
-                _webAPIDataContext.Trips.Add(trip);
-                _webAPIDataContext.SaveChanges();
-            }
+                //value.CreatedOn = DateTime.Now;
+                
+                foreach (var trip in value.Triplist)
+                {
 
+                    //tripId = trip.TripID;
+                    _webAPIDataContext.Trips.Add(trip);
+
+                }
+                _webAPIDataContext.SaveChanges();
+                sres.Success = true;
+
+            }
+            return sres;
         }
 
         // PUT api/<controller>/5
@@ -88,9 +151,69 @@ namespace TravelAppCore
         }
 
         // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("Tripsdelete")]
+        public SFResponse Delete(string UserApiKeyId, int Id)
         {
+            IQueryable<Userapikey> query = _webAPIDataContext.Userapikey.Where(p => p.ApiKeyId == UserApiKeyId);
+            Userapikey ukey = query.FirstOrDefault();
+            Console.WriteLine("Apikey match: ");
+            Console.WriteLine(ukey);
+            SFResponse sres = new SFResponse();
+            sres.Success = false;
+
+            if (ukey != null && ukey.Verified)
+            {
+                var queryreq = _webAPIDataContext.Trips.Where(p => p.Id == Id && p.UserID == ukey.UserId);
+                Trips trip = queryreq.FirstOrDefault();
+                //Console.WriteLine(trip.Id);
+                if (trip != null)
+                {
+                    _webAPIDataContext.Trips.Remove(trip);
+                    _webAPIDataContext.SaveChanges();
+                    sres.Success = true;
+                    return sres;
+                }
+            }
+            return sres;
         }
+
+        [HttpDelete("TripsTripIdDelete")]
+        public SFResponse tDelete(string UserApiKeyId, int tripId)
+        {
+            IQueryable<Userapikey> query = _webAPIDataContext.Userapikey.Where(p => p.ApiKeyId == UserApiKeyId);
+            Userapikey ukey = query.FirstOrDefault();
+            Console.WriteLine("Apikey match: ");
+            Console.WriteLine(ukey);
+            SFResponse sres = new SFResponse();
+            sres.Success = false;
+           
+            if (ukey != null && ukey.Verified)
+            {
+                var queryreq = _webAPIDataContext.Trips.Where(p => p.TripID == tripId && p.UserID == ukey.UserId);
+                //Trips trip = queryreq.FirstOrDefault();
+                List<Trips> trips = queryreq.ToList<Trips>();
+                //Console.WriteLine(trip.Id);
+                foreach (var trip in trips)
+                {
+                    _webAPIDataContext.Trips.Remove(trip);
+                    
+                }
+                _webAPIDataContext.SaveChanges();
+                /*
+                if (trip != null)
+                {
+                    _webAPIDataContext.Trips.Remove(trip);
+                    _webAPIDataContext.SaveChanges();
+                    sres.Success = true;
+                    return sres;
+                }*/
+
+                sres.Success = true;
+                return sres;
+            }
+            return sres;
+        }
+
+
     }
 }
