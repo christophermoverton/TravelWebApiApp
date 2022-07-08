@@ -92,10 +92,10 @@ namespace TravelAppCore
             const String TO = "christophermoverton@gmail.com";
 
             // Replace smtp_username with your Amazon SES SMTP user name.
-            const String SMTP_USERNAME = "AKIAIYNCOPLVD3AO4AHQ";
+            const String SMTP_USERNAME = "entersmtpusernamehere";
 
             // Replace smtp_password with your Amazon SES SMTP user name.
-            const String SMTP_PASSWORD = "AuN7ok4VPp0LRFOiaajFyZ4C6P6g5ujjCwDsSJZYH7Dv";
+            const String SMTP_PASSWORD = "entersmtpuserpasswordhere";
 
             // (Optional) the name of a configuration set to use for this message.
             // If you comment out this line, you also need to remove or comment out
@@ -189,10 +189,10 @@ namespace TravelAppCore
                 const String TO = "christophermoverton@gmail.com";
 
                 // Replace smtp_username with your Amazon SES SMTP user name.
-                const String SMTP_USERNAME = "AKIAIYNCOPLVD3AO4AHQ";
+                const String SMTP_USERNAME = "enter_smtp_user_name_here";
 
                 // Replace smtp_password with your Amazon SES SMTP user name.
-                const String SMTP_PASSWORD = "AuN7ok4VPp0LRFOiaajFyZ4C6P6g5ujjCwDsSJZYH7Dv";
+                const String SMTP_PASSWORD = "enter_smtp_user_password_here";
 
                 // (Optional) the name of a configuration set to use for this message.
                 // If you comment out this line, you also need to remove or comment out
